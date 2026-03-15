@@ -23,22 +23,18 @@ const GRADES = [
 ];
 
 /**
- * SRM marking scheme (non-project):
- *   Internal: raw marks out of 60, scaled to 40  → (obtained / 60) * 40
- *   Final:    raw marks out of 75, scaled to 60  → (final / 75) * 60
+ * SRM marking scheme:
+ *   Internal:  raw marks out of 60 → direct 60  (used as-is)
+ *   External:  raw marks out of 75 → scaled to 40  → (obtained / 75) * 40
  *   Total out of 100
  *
- * To get threshold T:
- *   (obtained/60)*40 + (final/75)*60 >= T
- *   final >= (T - (obtained/60)*40) * 75/60
- *
- * Project subjects (courseCode ends with 'P'):
- *   Fully internal, 100 marks — no final exam.
+ * To reach threshold T:
+ *   internal_obtained + (external / 75) * 40 >= T
+ *   external >= (T - internal_obtained) * 75 / 40
  */
 const calcRequired = (internalObtained: number, threshold: number): { required: number; isPossible: boolean } => {
-  const internalScaled = (internalObtained / 60) * 40;
-  const neededFromFinal = threshold - internalScaled;
-  const requiredOutOf75 = (neededFromFinal / 60) * 75;
+  const neededFromExternal = threshold - internalObtained;
+  const requiredOutOf75 = (neededFromExternal / 40) * 75;
   const isPossible = requiredOutOf75 >= 0 && requiredOutOf75 <= 75;
   return {
     required: Math.max(0, Math.min(75, Math.ceil(requiredOutOf75))),
@@ -142,7 +138,7 @@ export const SGPAPredictor: React.FC<SGPAPredictorProps> = ({
         {/* Note */}
         <div className="flex-shrink-0 px-5 py-2 bg-accent/50 border-b border-border">
           <p className="text-[10px] text-muted-foreground">
-            ⚠ SRM uses <span className="text-foreground font-semibold">relative grading</span> — final grade may vary. This shows the <span className="text-foreground font-semibold">minimum marks needed</span> in the final exam (out of 75) to hit each grade threshold.
+            ⚠ SRM uses <span className="text-foreground font-semibold">relative grading</span> — final grade may vary. This shows the <span className="text-foreground font-semibold">minimum marks needed</span> in the external exam (out of 75) to hit each grade threshold. Internal marks (out of 60) are counted directly.
           </p>
         </div>
 
@@ -209,7 +205,7 @@ export const SGPAPredictor: React.FC<SGPAPredictorProps> = ({
                       <span className={cn("font-bold", row.isPossible ? "text-foreground" : "text-red-500")}>
                         {row.required}/75
                       </span>{" "}
-                      in final exam
+                      in external exam
                     </p>
                     <span className={cn("text-[11px] font-bold", row.isPossible ? "text-green-500" : "text-red-500")}>
                       {row.isPossible ? "✓ achievable" : "✗ not possible"}
@@ -224,7 +220,7 @@ export const SGPAPredictor: React.FC<SGPAPredictorProps> = ({
         {/* Footer */}
         <div className="flex-shrink-0 px-5 py-2.5 border-t border-border">
           <p className="text-[10px] text-muted-foreground">
-            Internal (60) → scaled to 40 · Final (75) → scaled to 60 · Total = 100
+            Internal (out of 60) → direct · External (out of 75) → scaled to 40 · Total = 100
           </p>
         </div>
       </div>

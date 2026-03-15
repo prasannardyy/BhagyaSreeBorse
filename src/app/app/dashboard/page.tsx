@@ -55,7 +55,7 @@ const DashboardPage = () => {
   const displayName = nickname || userInfo?.name?.split(" ")[0] || "Student";
 
   return (
-    <div className="h-[calc(100vh-120px)] w-full flex flex-col max-w-2xl mx-auto gap-3 overflow-hidden">
+    <div className="w-full h-full flex flex-col max-w-2xl mx-auto gap-3 overflow-y-auto pb-4 pr-0.5">
 
       {/* Welcome */}
       <div className="space-y-0.5 flex-shrink-0">
@@ -104,9 +104,9 @@ const DashboardPage = () => {
       )}
 
       {/* Quick links */}
-      <div className="flex flex-col gap-1.5 flex-1 min-h-0">
-        <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold flex-shrink-0">Quick access</p>
-        <div className="grid grid-cols-1 gap-1.5 flex-1 content-start">
+      <div className="flex flex-col gap-1.5">
+        <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">Quick access</p>
+        <div className="grid grid-cols-1 gap-1.5">
           <AbsencePredictorCard />
           {features.map((f, i) => (
             <Link
